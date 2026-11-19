@@ -1,0 +1,14 @@
+{
+  "tags": [
+    "city",
+    "union",
+    "residential"
+  ],
+  "category": "pond",
+  "footprint_x": 5,
+  "footprint_z": 4,
+  "y_offset": -1,
+  "can_rotate": true,
+  "max_slope": 2,
+  "weight": 10
+}

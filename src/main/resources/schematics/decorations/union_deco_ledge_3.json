@@ -1,0 +1,17 @@
+{
+  "tags": [
+    "city",
+    "union",
+    "residential",
+    "timber"
+  ],
+  "flavours": [
+    "ledge"
+  ],
+  "width": 3,
+  "height": 1,
+  "y_offset": 3,
+  "depth_offset": 0,
+  "weight": 10,
+  "front_facing": "NORTH"
+}

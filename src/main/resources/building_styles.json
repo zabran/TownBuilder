@@ -1,0 +1,26 @@
+[
+  {
+    "id": "union_timber",
+    "tags": [
+      "city",
+      "union",
+      "residential"
+    ],
+    "foundation_block": "minecraft:cobblestone",
+    "floor_block": "minecraft:spruce_planks",
+    "gable_block": "minecraft:spruce_planks",
+    "roof_stairs": "minecraft:dark_oak_stairs",
+    "roof_slab": "minecraft:dark_oak_slab",
+    "roof_overhang": 1,
+    "basement_door": "minecraft:spruce_door",
+    "basement_frame_block": "minecraft:stone_bricks",
+    "entrance_stairs": "minecraft:stone_brick_stairs",
+    "crops": [
+      "minecraft:wheat[age=7]",
+      "minecraft:carrots[age=7]",
+      "minecraft:potatoes[age=7]",
+      "minecraft:beetroots[age=3]"
+    ],
+    "hidden_water_block": "minecraft:oak_trapdoor[half=top,waterlogged=true]"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "id": "union_stone_spruce",
+    "tags": [
+      "city",
+      "union"
+    ],
+    "post_block": "minecraft:stone_brick_wall",
+    "post_cap_block": "minecraft:stone_brick_slab",
+    "fill_block": "minecraft:spruce_fence",
+    "blocks_between_col": 3,
+    "height": 2,
+    "gate_schematic": "union_wood_gate.schem",
+    "gate_front_facing": "NORTH",
+    "gate_block": "minecraft:spruce_fence_gate"
+  }
+]

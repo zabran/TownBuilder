@@ -1,0 +1,19 @@
+{
+  "tags": [
+    "city",
+    "union",
+    "residential",
+    "timber"
+  ],
+  "module_type": "wall",
+  "length": 3,
+  "height": 3,
+  "has_door": true,
+  "has_window": false,
+  "allowed_floors": [
+    "basement"
+  ],
+  "max_per_building": 1,
+  "weight": 10,
+  "front_facing": "NORTH"
+}

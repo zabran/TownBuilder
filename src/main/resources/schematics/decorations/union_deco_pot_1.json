@@ -1,0 +1,17 @@
+{
+  "tags": [
+    "city",
+    "union",
+    "residential",
+    "timber"
+  ],
+  "flavours": [
+    "planter"
+  ],
+  "width": 1,
+  "height": 1,
+  "y_offset": 1,
+  "depth_offset": 0,
+  "weight": 10,
+  "front_facing": "NORTH"
+}

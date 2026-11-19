@@ -1,0 +1,16 @@
+name: TownBuilder
+version: '${version}'
+main: cz.lollywood.townbuilder.TownBuilderPlugin
+api-version: '1.21'
+depend: [WorldEdit]
+description: Procedural plot and town generator on WorldEdit (outline, build, foliage).
+authors: [LollyWood]
+commands:
+  plot:
+    description: TownBuilder - /plot (the menu), /plot item (the book that opens it), /plot outline|build|foliage <tags>, /plot save <kind> <name> <tags>, /plot info <tags>, /plot reload
+    usage: /plot [menu|item|outline|build|foliage|undo|save|info|reload|paste] ...
+    permission: townbuilder.use
+permissions:
+  townbuilder.use:
+    description: Use the /plot commands
+    default: op

@@ -1,0 +1,25 @@
+{
+  "tags": [
+    "city",
+    "union",
+    "residential",
+    "timber"
+  ],
+  "module_type": "wall",
+  "length": 3,
+  "height": 4,
+  "has_door": false,
+  "has_window": false,
+  "allowed_floors": [
+    "ground",
+    "upper"
+  ],
+  "max_per_building": 0,
+  "weight": 6,
+  "front_facing": "NORTH",
+  "decoration": true,
+  "decoration_flavours": [
+    "ledge"
+  ],
+  "decoration_chance": 0.5
+}

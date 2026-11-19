@@ -1,0 +1,14 @@
+{
+  "tags": [
+    "city",
+    "union",
+    "residential"
+  ],
+  "category": "gazebo",
+  "footprint_x": 4,
+  "footprint_z": 4,
+  "y_offset": 0,
+  "can_rotate": true,
+  "max_slope": 1,
+  "weight": 10
+}

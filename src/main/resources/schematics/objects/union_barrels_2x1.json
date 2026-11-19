@@ -1,0 +1,14 @@
+{
+  "tags": [
+    "city",
+    "union",
+    "residential"
+  ],
+  "category": "clutter",
+  "footprint_x": 2,
+  "footprint_z": 1,
+  "y_offset": 0,
+  "can_rotate": true,
+  "max_slope": 1,
+  "weight": 5
+}

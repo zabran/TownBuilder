@@ -1,0 +1,14 @@
+{
+  "tags": [
+    "city",
+    "union",
+    "residential"
+  ],
+  "category": "foliage",
+  "footprint_x": 3,
+  "footprint_z": 3,
+  "y_offset": 0,
+  "can_rotate": true,
+  "max_slope": 2,
+  "weight": 10
+}

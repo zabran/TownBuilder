@@ -1,0 +1,63 @@
+[
+  {
+    "id": "union_townhouse",
+    "tags": [
+      "city",
+      "union",
+      "residential"
+    ],
+    "min_plot_area": 150,
+    "house_shapes": [
+      "rectangle",
+      "L_shape"
+    ],
+    "stories_range": [
+      1,
+      2
+    ],
+    "required_elements": [
+      "house",
+      "fence"
+    ],
+    "optional_elements": [
+      "shed",
+      "garden",
+      "pond"
+    ],
+    "foliage_density": 0.15,
+    "max_house_share": 0.25,
+    "house_margin": 2,
+    "max_house_aspect": 2.0
+  },
+  {
+    "id": "union_corner_house",
+    "tags": [
+      "city",
+      "union",
+      "residential",
+      "large"
+    ],
+    "min_plot_area": 300,
+    "house_shapes": [
+      "L_shape",
+      "T_shape"
+    ],
+    "stories_range": [
+      2,
+      3
+    ],
+    "required_elements": [
+      "house",
+      "fence"
+    ],
+    "optional_elements": [
+      "shed",
+      "gazebo",
+      "garden"
+    ],
+    "foliage_density": 0.1,
+    "max_house_share": 0.3,
+    "house_margin": 2,
+    "max_house_aspect": 2.0
+  }
+]

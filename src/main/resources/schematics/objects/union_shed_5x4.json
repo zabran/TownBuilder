@@ -1,0 +1,14 @@
+{
+  "tags": [
+    "city",
+    "union",
+    "residential"
+  ],
+  "category": "shed",
+  "footprint_x": 5,
+  "footprint_z": 4,
+  "y_offset": 0,
+  "can_rotate": true,
+  "max_slope": 2,
+  "weight": 10
+}
