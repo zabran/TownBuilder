@@ -32,6 +32,8 @@ public final class Defs {
         public int houseMargin = 2;
         /** Extension: the house's main body at most this many times longer than wide. */
         public double maxHouseAspect = 2.0;
+        /** Extension (0.8.1): how much a new outline may differ from the best plan, 0-1 (0 = the same plan every time). */
+        public double variety = 0.3;
 
         @Override public List<String> tags() { return tags; }
     }

@@ -1,6 +1,7 @@
 package cz.lollywood.townbuilder.geom;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,13 @@ public final class Planner {
     public int cornerWidth = 1;
     /** How wide the inner corner modules are (0.6.0). */
     public int innerCornerWidth = 1;
+    /**
+     * How far a plan may stray from the "best" one (0.8.1; Arag 11-19: a new outline came out the same every time, the seed did
+     * nothing): 0 = always the biggest house nearest the gate and the extras farthest from it (0.8.0); 0.3 = a house size picked at
+     * random down to 70 % of the biggest that fits, and places picked at random up to 30 % of the plot's span from the best one.
+     * The layout's {@code variety}; 0 here so a bare Planner stays as 0.8.0 planned.
+     */
+    public double variety = 0;
 
     /**
      * @param inside cells inside the plot and not on the fence
@@ -79,18 +87,26 @@ public final class Planner {
         // biggest first; of equal areas the squarer
         sizes.sort(Comparator.comparingInt((int[] s) -> -s[0] * s[1]).thenComparingInt(s -> Math.abs(s[0] - s[1])));
         String shape = shapes.isEmpty() ? "rectangle" : shapes.get(rnd.nextInt(shapes.size()));
-        for (int[] s : sizes) {
-            Footprint.Rect at = bestSpot(s[0], s[1], tx, tz, null);
-            if (at == null) continue;
+        // the sizes that fit, biggest first; with variety (0.8.1) those down to (1 - variety) of the biggest's area in a random order
+        List<int[]> fitting = new ArrayList<>();
+        for (int[] s : sizes) if (bestSpot(s[0], s[1], tx, tz, null) != null) fitting.add(s);
+        if (!fitting.isEmpty() && variety > 0) {
+            int top = fitting.get(0)[0] * fitting.get(0)[1], n = 0;
+            while (n < fitting.size() && fitting.get(n)[0] * fitting.get(n)[1] >= (1 - variety) * top) n++;
+            List<int[]> band = new ArrayList<>(fitting.subList(0, n));
+            Collections.shuffle(band, rnd);
+            for (int i = 0; i < n; i++) fitting.set(i, band.get(i));
+        }
+        for (int[] s : fitting) {
             if (shape.equalsIgnoreCase("rectangle")) {
-                cands.add(new Footprint(List.of(at)));
+                cands.add(new Footprint(List.of(nearSpot(s[0], s[1], tx, tz, null))));
             } else {
                 for (Footprint f : wingsOn(s[0], s[1], totals, shape, maxArea, tx, tz)) cands.add(f);
             }
             if (cands.size() >= 12) break;
         }
         if (cands.isEmpty() && !shape.equalsIgnoreCase("rectangle")) return house(List.of("rectangle"), reach, doorLens, maxArea, target);
-        cands.sort(Comparator.comparingInt((Footprint f) -> -f.area()));
+        if (variety <= 0) cands.sort(Comparator.comparingInt((Footprint f) -> -f.area()));
         for (Footprint f : cands) {
             House h = validate(f, reach, doorLens, tx, tz, cornerWidth, innerCornerWidth);
             if (h != null) return h;
@@ -103,6 +119,8 @@ public final class Planner {
     private List<Footprint> wingsOn(int w, int d, List<Integer> totals, String shape, int maxArea, double tx, double tz) {
         List<Footprint> out = new ArrayList<>();
         boolean tee = shape.equalsIgnoreCase("T_shape");
+        Footprint.Rect main = nearSpot(w, d, tx, tz, null);   // the main body's place, the same for every wing tried on it
+        if (main == null) return out;
         for (int ww : totals) {
             if (ww >= (tee ? w - 1 : w) && ww >= (tee ? d - 1 : d)) continue;   // the wing narrower than the side it sits on
             for (int dd = 3; dd <= 9; dd++) {
@@ -112,8 +130,6 @@ public final class Planner {
                     if (ww > sideLen - (tee ? 4 : 2)) continue;
                     // place the main body first where it fits, then try the wing on it
                     for (int pass = 0; pass < (tee ? 1 : 2); pass++) {
-                        Footprint.Rect main = bestSpot(w, d, tx, tz, null);
-                        if (main == null) return out;
                         int off = tee ? (sideLen - ww) / 2 : (pass == 0 ? 0 : sideLen - ww);
                         Footprint.Rect wing = switch (side) {
                             case NORTH -> new Footprint.Rect(main.x0() + off, main.z0() - dd, main.x0() + off + ww - 1, main.z0() - 1);
@@ -127,7 +143,35 @@ public final class Planner {
             }
             if (out.size() > 8) break;
         }
+        if (variety > 0) Collections.shuffle(out, rnd);
         return out;
+    }
+
+    /** A spot for a w x d rectangle near the target: the nearest, or with variety one at random within variety x the span (0.8.1). */
+    public Footprint.Rect nearSpot(int w, int d, double tx, double tz, Set<Long> taken) {
+        return variety <= 0 ? bestSpot(w, d, tx, tz, taken) : pickSpot(w, d, tx, tz, taken, false);
+    }
+
+    /** The random pick of nearSpot and farSpot: every free spot within variety x the plot's span of the nearest (or farthest). */
+    private Footprint.Rect pickSpot(int w, int d, double tx, double tz, Set<Long> taken, boolean far) {
+        List<Footprint.Rect> rs = new ArrayList<>();
+        List<Double> ds = new ArrayList<>();
+        double best = far ? -1 : Double.MAX_VALUE;
+        for (int x = bx0; x + w - 1 <= bx1; x++)
+            for (int z = bz0; z + d - 1 <= bz1; z++) {
+                Footprint.Rect r = new Footprint.Rect(x, z, x + w - 1, z + d - 1);
+                if (!fits(r) || (taken != null && overlaps(r, taken))) continue;
+                double cx = x + (w - 1) / 2.0, cz = z + (d - 1) / 2.0;
+                double dist = Math.sqrt((cx - tx) * (cx - tx) + (cz - tz) * (cz - tz));
+                rs.add(r);
+                ds.add(dist);
+                best = far ? Math.max(best, dist) : Math.min(best, dist);
+            }
+        if (rs.isEmpty()) return null;
+        double slack = variety * Math.max(bx1 - bx0, bz1 - bz0);
+        List<Footprint.Rect> ok = new ArrayList<>();
+        for (int i = 0; i < rs.size(); i++) if (far ? ds.get(i) >= best - slack : ds.get(i) <= best + slack) ok.add(rs.get(i));
+        return ok.get(rnd.nextInt(ok.size()));
     }
 
     /** The spot for a w x d rectangle nearest the target, or null. */
@@ -145,8 +189,10 @@ public final class Planner {
         return best;
     }
 
-    /** The spot for a w x d rectangle FARTHEST from a point (a shed behind the house), avoiding taken cells. */
+    /** The spot for a w x d rectangle FARTHEST from a point (a shed behind the house), avoiding taken cells; with variety one at
+     *  random within variety x the span of the farthest (0.8.1). */
     public Footprint.Rect farSpot(int w, int d, double tx, double tz, Set<Long> taken) {
+        if (variety > 0) return pickSpot(w, d, tx, tz, taken, true);
         Footprint.Rect best = null;
         double bestD = -1;
         for (int x = bx0; x + w - 1 <= bx1; x++)

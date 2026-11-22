@@ -1,7 +1,5 @@
 # TownBuilder
 
-> This public copy leaves out two things the README mentions: the messages to the builders (`docs/ZPRAVA-PRO-ARAGA-*.md`) and the 2017 Vindgard world excerpt (`examples/vindgard-*`, `docs/vindgard-2017-*`), both private to the group.
-
 A Paper 1.21.11 plugin for filling town plots on the LollyWood server with WorldEdit 7.3 (plain WorldEdit or FAWE): the builder
 marks a plot, the plugin draws coloured outlines, the builder corrects them, the plugin builds the house, the fence, the shed,
 pond and garden, and finally scatters trees and clutter. Every step goes into the builder's WorldEdit history, so `//undo` reverts
@@ -16,6 +14,13 @@ it. Specification: Arag's *Příprava zadání pro Minecraft plugin* (2026-11-13
    example's name with `overwrite` to replace its placeholder, or delete the placeholder `.schem`.
 4. `/plot info city,union,residential` shows what is there and what is still missing.
 The pictures in `docs/` show the test plots of each version.
+
+**Version 0.8.1 (2026-11-22): the outline's seed works** (Arag 11-19: every new outline put the house, garden and pond in the same
+place and size). The planner had always taken the biggest house nearest the gate and the extras farthest from it, so the seed only
+picked the shape. Now the layout's `variety` (0-1, default 0.3) lets each outline pick the house's size down to (1 - variety) of the
+biggest that fits, and the house's and the extras' places within variety x the plot's span of their best place (the house still
+faces the gate); `variety: 0` = 0.8.0's single plan; the same seed still repeats a plan. Tested: 8 seeds, 8 different plans
+(`tools/test_arag081.py`, `docs/test-plot-0.8.1-seeds.png`). For Arag: `ZPRAVA-PRO-ARAGA-0.8.1.md`.
 
 **Version 0.8.0 (2026-11-17): Arag's three wishes of 11-17 and the menu.**
 - **For Arag:** `ZPRAVA-PRO-ARAGA-0.8.0.md` (Czech; the zip's top folder, `docs/` in the repo).
@@ -184,7 +189,8 @@ preset's `gate_schematic`. **A placeholder is used in real builds until it is re
   outside the game; `tools/render_dump.py` draws it).
 
 ## How the plan is made
-The house goes as near the main gate (the gold block nearest the plot's middle) as it fits, up to `max_house_share` of the plot
+The house goes near the main gate (the gold block nearest the plot's middle; how near and how big by the layout's `variety`, so
+every new outline differs: 0.8.1), up to `max_house_share` of the plot
 and `house_margin` blocks from the fence, at most `max_house_aspect` times longer than wide, its front toward that gate; every wall
 length must be a sum of the modules' lengths. The
 shed, pond and garden go behind it, away from the gate, with a free row around each. The floor stands one block above the highest
@@ -232,6 +238,7 @@ wins, then the one with the fewest extra tags; modules of one kind are drawn by 
 | `max_house_share` | the largest part of the plot the house may cover (0-1) | 0.4 |
 | `house_margin` | free blocks between the fence and the house | 2 |
 | `max_house_aspect` | the house's main body at most this many times longer than wide | 2.0 |
+| `variety` | how much each new outline differs (0-1): the house's size picked at random down to (1 - variety) of the biggest that fits, the house and the extras placed at random up to variety x the plot's span from their best place; 0 = the same plan every time (as 0.8.0) | 0.3 |
 
 ### `fences.json` (a list)
 | key | meaning |

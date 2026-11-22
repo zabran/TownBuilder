@@ -100,6 +100,7 @@ public final class OutlinePhase {
 
         Planner planner = new Planner(inside, Math.max(1, layout.houseMargin), k.rnd);
         planner.maxAspect = Math.max(1.0, layout.maxHouseAspect);
+        planner.variety = Math.max(0, Math.min(1, layout.variety));
         planner.cornerWidth = BuildPhase.cornerWidth(k);
         planner.innerCornerWidth = BuildPhase.width(k, "inner_corner");
         int maxArea = (int) Math.max(25, layout.maxHouseShare * area);
@@ -135,10 +136,25 @@ public final class OutlinePhase {
                     col = e.equals("pond") ? Blocks.POND : Blocks.SHED;
                 }
                 case "garden" -> {
-                    for (int[] sz : new int[][]{{9, 7}, {7, 7}, {7, 5}, {5, 5}, {5, 3}, {3, 3}}) {
-                        r = planner.farSpot(sz[0], sz[1], tx, tz, taken);
-                        if (r == null) r = planner.farSpot(sz[1], sz[0], tx, tz, taken);
-                        if (r != null) break;
+                    int[][] sizes = {{9, 7}, {7, 7}, {7, 5}, {5, 5}, {5, 3}, {3, 3}};
+                    // 0.8.1: with variety, start at random among the sizes down to (1 - variety) of the biggest's area, turned at random
+                    int first = 0;
+                    boolean turnFirst = false;
+                    if (planner.variety > 0) {
+                        int n = 1;
+                        while (n < sizes.length && sizes[n][0] * sizes[n][1] >= (1 - planner.variety) * sizes[0][0] * sizes[0][1]) n++;
+                        first = k.rnd.nextInt(n);
+                        turnFirst = k.rnd.nextBoolean();
+                    }
+                    for (int i = first; i < sizes.length && r == null; i++) {
+                        int[] sz = sizes[i];
+                        int sa = turnFirst ? sz[1] : sz[0], sb = turnFirst ? sz[0] : sz[1];
+                        r = planner.farSpot(sa, sb, tx, tz, taken);
+                        if (r == null) r = planner.farSpot(sb, sa, tx, tz, taken);
+                    }
+                    for (int i = 0; i < first && r == null; i++) {   // the bigger ones skipped at random, if nothing smaller fits
+                        r = planner.farSpot(sizes[i][0], sizes[i][1], tx, tz, taken);
+                        if (r == null) r = planner.farSpot(sizes[i][1], sizes[i][0], tx, tz, taken);
                     }
                     col = Blocks.GARDEN;
                 }
